@@ -6,7 +6,7 @@ import { generateInsights } from "./insightEngine";
 import { sanitizeGeneratedHealthText } from "@/lib/safety/medicalClaimGuard";
 
 export const doctorReportDisclaimer =
-  "This report is based on user-exported wearable wellness data. It may be incomplete or inaccurate and is for personal tracking and doctor discussion only. It does not replace professional medical advice.";
+  "This report is based on user-exported wearable wellness data. It may be incomplete or inaccurate and is for personal tracking and doctor discussion only. It does not diagnose, treat, or replace medical advice.";
 
 function sourceList(data: NormalizedHealthData): string[] {
   return [
@@ -65,11 +65,10 @@ export function generateDoctorOnePageSummary({
     chartRecommendations: ["Heart rate trend", "Sleep duration", "Daily steps", "Symptom timeline"],
     userNotesPrompt: "User notes: ______________________________________________________________",
     questionsToAsk: [
-      "Could these symptoms be related to sleep, activity load, caffeine, stress, or hydration?",
+      "Could these symptoms be related to sleep, activity load, caffeine, stress, hydration, or device accuracy?",
       "Are these wearable trends useful for further evaluation?",
       "Should I track any additional symptoms or measurements?"
     ],
     disclaimer: doctorReportDisclaimer
   };
 }
-

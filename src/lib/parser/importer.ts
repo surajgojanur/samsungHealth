@@ -167,6 +167,14 @@ export async function parseVirtualFiles(
 
   const normalized = csvFiles.length > 0 ? parseNormalizedHealth(csvFiles) : { data: emptyData(), warnings: [] };
   warnings.push(...normalized.warnings);
+  if (csvFiles.length === 0) {
+    warnings.push({
+      severity: "medium",
+      code: "NO_USEFUL_HEALTH_FILES_FOUND",
+      message: "No useful health files found.",
+      recommendation: "Upload a Samsung Health export ZIP or extracted folder containing Samsung CSV files."
+    });
+  }
 
   const report: ParserReport = {
     generatedAt: new Date().toISOString(),
@@ -269,18 +277,30 @@ function buildDetections(inventory: FileInventoryItem[], data: NormalizedHealthD
 
   return orderedCategories.map((category) => {
     const counts = categoryCounts[category];
-    const missingByDefinition = category === "bloodPressure" || category === "ecg" || category === "menstrualCycle";
+    const unsupported = category === "bloodPressure" || category === "ecg" || category === "menstrualCycle";
     const dates = counts.dates.sort();
-    const limited = category === "nutrition" || category === "water" || category === "stress";
+    const limited = (category === "nutrition" || category === "water" || category === "stress") && counts.rows > 0;
+    const experimental = category === "metadata" && counts.files > 0;
+    const sparse = counts.rows > 0 && counts.rows < 5;
+    const status = unsupported ? "Unsupported" : experimental ? "Experimental" : counts.files === 0 || counts.rows === 0 ? "Missing" : limited || sparse ? "Limited" : "Available";
+    const missingNote = `${categoryLabels[category]} was not found in this export. This usually means it was not recorded or not included in the Samsung Health export.`;
     return {
       category,
       label: categoryLabels[category],
-      status: missingByDefinition || counts.files === 0 || counts.rows === 0 ? "Missing" : limited ? "Partially available" : "Available",
+      status,
       fileCount: counts.files,
       rowCount: counts.rows,
       dateRange: dates.length ? { start: dates[0], end: dates[dates.length - 1] } : undefined,
-      confidence: missingByDefinition ? "high" : counts.confidence,
-      notes: missingByDefinition ? "Not found in this export." : limited ? "Limited or sparse according to the schema report." : counts.rows > 0 ? "Detected and parsed." : "Not found in this export."
+      confidence: unsupported ? "high" : counts.confidence,
+      notes: unsupported
+        ? `${categoryLabels[category]} is listed as unsupported in this MVP and remains inventory-only if present.`
+        : status === "Missing"
+          ? missingNote
+          : status === "Limited"
+            ? `${categoryLabels[category]} data exists, but there are too few entries or partial fields for confident insights.`
+            : status === "Experimental"
+              ? "Device/source metadata is masked and used only for data-quality context."
+              : "Detected and parsed."
     };
   });
 }

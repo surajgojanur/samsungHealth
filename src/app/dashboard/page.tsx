@@ -34,16 +34,18 @@ export default function DashboardPage() {
   const insights = useMemo(() => generateInsights({ data: active.data, symptoms: displaySymptoms, report: active.report, dateRange: metrics.dateRange }), [active, displaySymptoms, metrics.dateRange]);
   const story = useMemo(() => generateHealthStory(active.data, displaySymptoms, metrics.dateRange), [active.data, displaySymptoms, metrics.dateRange]);
   const doctorPoints = topDoctorDiscussionInsights(insights, 3);
+  const qualityLabel = metrics.coverageScore >= 80 ? "Excellent" : metrics.coverageScore >= 55 ? "Good" : metrics.coverageScore >= 25 ? "Limited" : "Sparse";
 
   return (
     <div className="space-y-6">
       <div className="flex flex-col justify-between gap-4 md:flex-row md:items-end">
         <div>
-          <h1 className="text-3xl font-semibold">Overview</h1>
-          <p className="mt-2 text-muted-foreground">{sampleMode ? "Sample dashboard shown with fake data. Upload your export for private analysis." : "Samsung Health export parsed locally."}</p>
+          <h1 className="text-3xl font-semibold">HealthLens Dashboard</h1>
+          <p className="mt-2 text-muted-foreground">Your data has a story. Here are the strongest patterns HealthLens found from your export.</p>
         </div>
         <div className="flex gap-2">
           <Badge tone="good" className="self-center">Processed locally</Badge>
+          {sampleMode ? <Badge tone="warn" className="self-center">Sample data</Badge> : null}
           {sampleMode ? (
             <Button onClick={() => void setImportResult(makeSampleImport())}>Use sample data</Button>
           ) : null}
@@ -55,20 +57,9 @@ export default function DashboardPage() {
 
       <HealthStoryCard story={story} confidence={metrics.coverageScore >= 70 ? "high" : metrics.coverageScore >= 40 ? "medium" : "low"} />
 
-      <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
-        <MetricCard icon={ShieldCheck} label="Coverage score" value={`${metrics.coverageScore}%`} />
-        <MetricCard icon={Activity} label="Average daily steps" value={formatNumber(metrics.averageDailySteps)} />
-        <MetricCard icon={Moon} label="Average sleep" value={metrics.averageSleepHours ? `${metrics.averageSleepHours.toFixed(1)} h` : "Not enough data"} />
-        <MetricCard icon={HeartPulse} label="Average heart rate" value={metrics.averageHeartRate ? `${Math.round(metrics.averageHeartRate)} bpm` : "Not enough data"} />
-        <MetricCard icon={Dumbbell} label="Workouts" value={metrics.workoutCount.toLocaleString()} />
-        <MetricCard icon={TrendingUp} label="Average SpO2" value={metrics.averageSpo2 ? `${metrics.averageSpo2.toFixed(1)}%` : "Not enough data"} />
-        <MetricCard icon={Activity} label="Latest weight" value={metrics.latestWeightKg ? `${metrics.latestWeightKg.toFixed(1)} kg` : "Not enough data"} />
-        <MetricCard icon={AlertTriangle} label="Warnings" value={metrics.warningCount.toLocaleString()} />
-      </div>
-
       <section id="insights" className="grid gap-5 xl:grid-cols-[minmax(0,1fr)_380px]">
         <div className="space-y-3">
-          <h2 className="text-2xl font-semibold">Top insights</h2>
+          <h2 className="text-2xl font-semibold">Top 3 Insights</h2>
           <div className="grid gap-4 lg:grid-cols-3">
             {insights.slice(0, 3).map((insight) => (
               <InsightCard key={insight.id} insight={insight} />
@@ -98,12 +89,38 @@ export default function DashboardPage() {
         </Card>
       </section>
 
-      <PeriodSummary insights={insights} />
+      <Card>
+        <CardContent className="flex flex-col justify-between gap-3 p-5 md:flex-row md:items-center">
+          <div>
+            <p className="font-semibold">Data Quality Badge</p>
+            <p className="mt-1 text-sm text-muted-foreground">Coverage score reflects supported categories, parser warnings, and sparse data. It is a confidence guide, not a judgement about your health.</p>
+          </div>
+          <Badge tone={metrics.coverageScore >= 55 ? "good" : "warn"}>{qualityLabel} · {metrics.coverageScore}%</Badge>
+        </CardContent>
+      </Card>
+
+      <section id="timeline" className="space-y-3">
+        <h2 className="text-2xl font-semibold">Timeline Overview</h2>
+        <PeriodSummary insights={insights} />
+        <UnusualDaysPanel data={active.data} symptoms={displaySymptoms} />
+      </section>
+
+      <section className="space-y-3">
+        <h2 className="text-2xl font-semibold">Section cards</h2>
+        <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
+          <MetricCard icon={ShieldCheck} label="Coverage score" value={`${metrics.coverageScore}%`} />
+          <MetricCard icon={Activity} label="Average daily steps" value={formatNumber(metrics.averageDailySteps)} />
+          <MetricCard icon={Moon} label="Average sleep" value={metrics.averageSleepHours ? `${metrics.averageSleepHours.toFixed(1)} h` : "Not enough data"} />
+          <MetricCard icon={HeartPulse} label="Average heart rate" value={metrics.averageHeartRate ? `${Math.round(metrics.averageHeartRate)} bpm` : "Not enough data"} />
+          <MetricCard icon={Dumbbell} label="Workouts" value={metrics.workoutCount.toLocaleString()} />
+          <MetricCard icon={TrendingUp} label="Average SpO2" value={metrics.averageSpo2 ? `${metrics.averageSpo2.toFixed(1)}%` : "Not enough data"} />
+          <MetricCard icon={Activity} label="Latest weight" value={metrics.latestWeightKg ? `${metrics.latestWeightKg.toFixed(1)} kg` : "Not enough data"} />
+          <MetricCard icon={AlertTriangle} label="Warnings" value={metrics.warningCount.toLocaleString()} />
+        </div>
+      </section>
+
       <InsightHub insights={insights} />
       <CorrelationExplorer data={active.data} symptoms={displaySymptoms} />
-      <div id="timeline">
-        <UnusualDaysPanel data={active.data} symptoms={displaySymptoms} />
-      </div>
       <div id="symptoms">
         <SymptomPatternPanel data={active.data} symptoms={displaySymptoms} />
       </div>
@@ -116,7 +133,7 @@ export default function DashboardPage() {
 
       <ChartGrid data={active.data} symptoms={displaySymptoms} />
       <div id="data-quality">
-      <DetectionTable detections={active.report.detections.length ? active.report.detections : makeSampleImport().report.detections} />
+        <DetectionTable detections={active.report.detections.length ? active.report.detections : makeSampleImport().report.detections} />
       </div>
       <SymptomLogPanel />
     </div>

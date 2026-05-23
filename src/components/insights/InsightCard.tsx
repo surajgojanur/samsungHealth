@@ -43,6 +43,7 @@ export function InsightCard({ insight, added, onToggleReport }: { insight: Healt
               <Icon className="h-5 w-5" />
             </span>
             <div>
+              <p className="text-xs font-medium uppercase text-muted-foreground">{insight.category.replace("_", " ")}</p>
               <CardTitle className="leading-snug">{insight.title}</CardTitle>
               <p className="mt-2 text-sm text-muted-foreground">{insight.plainLanguage}</p>
             </div>
@@ -87,4 +88,3 @@ export function InsightCard({ insight, added, onToggleReport }: { insight: Healt
     </Card>
   );
 }
-

@@ -65,7 +65,6 @@ export const useHealthStore = create<HealthState>((set, get) => ({
   },
   async reset() {
     await clearAllStoredData();
-    set({ importResult: undefined, symptoms: [] });
+    set({ importResult: undefined, symptoms: [], persistenceConsent: false, debugMode: false, strictPrivacy: true });
   }
 }));
-

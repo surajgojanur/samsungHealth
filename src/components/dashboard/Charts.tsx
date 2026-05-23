@@ -43,6 +43,12 @@ export function ChartGrid({ data, symptoms }: { data: NormalizedHealthData; symp
     return acc;
   }, {});
   const activityWithSymptoms = data.activity.map((item) => ({ ...item, symptoms: symptomCounts[item.date] ?? 0 }));
+  const fallbackRows = [
+    ...heart.slice(0, 6).map((item) => ({ chart: "Heart rate trend", date: item.date, value: `${Math.round(item.bpm)} bpm` })),
+    ...sleep.slice(0, 6).map((item) => ({ chart: "Sleep trend", date: item.date, value: `${item.hours} hours` })),
+    ...activityWithSymptoms.slice(0, 6).map((item) => ({ chart: "Steps trend", date: item.date, value: `${item.steps?.toLocaleString() ?? 0} steps` })),
+    ...symptoms.slice(0, 6).map((item) => ({ chart: "Symptom timeline", date: item.localDate, value: `${item.customSymptom ?? item.symptomType.replaceAll("_", " ")} severity ${item.severity ?? "not recorded"}` }))
+  ];
 
   return (
     <div className="grid gap-5 xl:grid-cols-2">
@@ -131,6 +137,39 @@ export function ChartGrid({ data, symptoms }: { data: NormalizedHealthData; symp
       ) : (
         <EmptyChart title="Body weight trend" description="Requires weight rows." />
       )}
+      <Card className="xl:col-span-2">
+        <CardHeader>
+          <CardTitle>Chart table fallback</CardTitle>
+          <CardDescription>Text summaries for important charts so trends remain accessible without relying on chart visuals.</CardDescription>
+        </CardHeader>
+        <CardContent className="overflow-x-auto">
+          <table className="w-full min-w-[620px] text-left text-sm">
+            <caption className="sr-only">Accessible fallback table for heart rate, sleep, steps, and symptom timeline charts</caption>
+            <thead className="text-muted-foreground">
+              <tr className="border-b">
+                <th className="py-2 pr-3">Chart</th>
+                <th className="py-2 pr-3">Date</th>
+                <th className="py-2">Value</th>
+              </tr>
+            </thead>
+            <tbody>
+              {fallbackRows.length ? (
+                fallbackRows.map((row, index) => (
+                  <tr key={`${row.chart}-${row.date}-${index}`} className="border-b last:border-0">
+                    <td className="py-3 pr-3 font-medium">{row.chart}</td>
+                    <td className="py-3 pr-3">{row.date}</td>
+                    <td className="py-3 text-muted-foreground">{row.value}</td>
+                  </tr>
+                ))
+              ) : (
+                <tr>
+                  <td className="py-3 text-muted-foreground" colSpan={3}>Not enough parsed data for chart table summaries.</td>
+                </tr>
+              )}
+            </tbody>
+          </table>
+        </CardContent>
+      </Card>
     </div>
   );
 }
@@ -152,4 +191,3 @@ function MetricChart({ title, description, children }: { title: string; descript
     </Card>
   );
 }
-

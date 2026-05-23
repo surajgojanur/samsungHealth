@@ -29,7 +29,10 @@ export function AppShell({ children }: { children: React.ReactNode }) {
             <span className="flex h-9 w-9 items-center justify-center rounded-md bg-primary text-primary-foreground">
               <Activity className="h-5 w-5" />
             </span>
-            <span>HealthLens</span>
+            <span>
+              <span className="block leading-tight">HealthLens</span>
+              <span className="block text-xs font-normal text-muted-foreground">Samsung Health Insights</span>
+            </span>
           </Link>
           <nav className="hidden items-center gap-1 md:flex">
             {nav.map((item) => {
@@ -55,6 +58,12 @@ export function AppShell({ children }: { children: React.ReactNode }) {
         </div>
       </header>
       <main className="mx-auto max-w-7xl px-4 py-6 md:py-8">{children}</main>
+      <footer className="border-t bg-background">
+        <div className="mx-auto flex max-w-7xl flex-col gap-2 px-4 py-5 text-xs leading-5 text-muted-foreground md:flex-row md:items-center md:justify-between">
+          <p>HealthLens is an independent open-source project and is not affiliated with Samsung.</p>
+          <p>Local-first by default. For personal tracking and doctor discussion only.</p>
+        </div>
+      </footer>
     </div>
   );
 }

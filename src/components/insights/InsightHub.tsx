@@ -57,7 +57,7 @@ export function InsightHub({ insights }: { insights: HealthInsight[] }) {
       <div className="flex flex-col justify-between gap-3 md:flex-row md:items-end">
         <div>
           <h2 className="text-2xl font-semibold">Insight Hub</h2>
-          <p className="mt-1 text-sm text-muted-foreground">Your data has a story. Here are the strongest patterns we found.</p>
+          <p className="mt-1 text-sm text-muted-foreground">Plain-language patterns with supporting metrics, confidence, limitations, and doctor-discussion context.</p>
         </div>
         <Badge>{filtered.length} insights</Badge>
       </div>
@@ -69,19 +69,22 @@ export function InsightHub({ insights }: { insights: HealthInsight[] }) {
         ))}
       </div>
       <div className="grid gap-3 rounded-md border bg-card p-3 md:grid-cols-5">
-        <select className="h-10 rounded-md border bg-background px-3 text-sm" value={range} onChange={(event) => setRange(event.target.value)}>
+        <label className="sr-only" htmlFor="insight-range">Insight date range</label>
+        <select id="insight-range" className="h-10 rounded-md border bg-background px-3 text-sm" value={range} onChange={(event) => setRange(event.target.value)}>
           <option value="all">All time</option>
           <option value="7">Last 7 days</option>
           <option value="30">Last 30 days</option>
           <option value="90">Last 90 days</option>
         </select>
-        <select className="h-10 rounded-md border bg-background px-3 text-sm" value={confidence} onChange={(event) => setConfidence(event.target.value)}>
+        <label className="sr-only" htmlFor="insight-confidence">Insight confidence</label>
+        <select id="insight-confidence" className="h-10 rounded-md border bg-background px-3 text-sm" value={confidence} onChange={(event) => setConfidence(event.target.value)}>
           <option value="all">All confidence</option>
           <option value="high">High</option>
           <option value="medium">Medium</option>
           <option value="low">Low</option>
         </select>
-        <select className="h-10 rounded-md border bg-background px-3 text-sm" value={category} onChange={(event) => setCategory(event.target.value)}>
+        <label className="sr-only" htmlFor="insight-category">Insight category</label>
+        <select id="insight-category" className="h-10 rounded-md border bg-background px-3 text-sm" value={category} onChange={(event) => setCategory(event.target.value)}>
           <option value="all">All categories</option>
           {categories.map((item) => (
             <option key={item} value={item}>
@@ -111,4 +114,3 @@ export function InsightHub({ insights }: { insights: HealthInsight[] }) {
     </section>
   );
 }
-

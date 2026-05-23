@@ -9,7 +9,13 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 
 export function HealthStoryCard({ story, confidence = "medium" }: { story: HealthStory; confidence?: "high" | "medium" | "low" }) {
   const [added, setAdded] = useState(false);
-  const bullets = [story.topPositivePattern, story.topAttentionPattern, story.symptomPattern].filter(Boolean).slice(0, 3);
+  const rows = [
+    { label: "One-line summary", text: story.oneLineSummary },
+    { label: "What improved", text: story.topPositivePattern || "No clear improvement pattern stood out in this export." },
+    { label: "What needs attention", text: story.topAttentionPattern || "No strong attention pattern stood out across the available core metrics." },
+    { label: "What data is limited", text: story.dataLimitations[0] || "Core data coverage is strong enough for useful trend review." },
+    { label: "Useful for doctor discussion", text: story.doctorReadySummary }
+  ];
   return (
     <Card className="border-primary/25 bg-card shadow-md">
       <CardHeader className="gap-3">
@@ -37,10 +43,11 @@ export function HealthStoryCard({ story, confidence = "medium" }: { story: Healt
         </div>
       </CardHeader>
       <CardContent className="space-y-4">
-        <div className="grid gap-3 md:grid-cols-3">
-          {bullets.map((bullet) => (
-            <div key={bullet} className="rounded-md border bg-background p-4 text-sm">
-              {bullet}
+        <div className="grid gap-3 md:grid-cols-2">
+          {rows.map((row) => (
+            <div key={row.label} className="rounded-md border bg-background p-4 text-sm">
+              <p className="font-medium">{row.label}</p>
+              <p className="mt-2 text-muted-foreground">{row.text}</p>
             </div>
           ))}
         </div>
@@ -54,4 +61,3 @@ export function HealthStoryCard({ story, confidence = "medium" }: { story: Healt
     </Card>
   );
 }
-

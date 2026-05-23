@@ -163,6 +163,7 @@ export interface SymptomLog {
     caffeine?: boolean;
     workout?: boolean;
     poorSleep?: boolean;
+    stress?: boolean;
     doctorNote?: boolean;
   };
 }
@@ -187,7 +188,7 @@ export interface FileInventoryItem {
 export interface CategoryDetection {
   category: CategoryKey;
   label: string;
-  status: "Available" | "Missing" | "Partially available" | "Unknown format";
+  status: "Available" | "Missing" | "Limited" | "Experimental" | "Unsupported";
   fileCount: number;
   rowCount: number;
   dateRange?: { start: string; end: string };
@@ -233,4 +234,3 @@ export interface ImportResult {
   report: ParserReport;
   debugPreview?: Array<Record<string, string | number | null>>;
 }
-

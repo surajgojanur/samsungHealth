@@ -26,12 +26,19 @@ export default function SettingsPage() {
           <CardDescription>Persistence stores normalized records and symptoms in IndexedDB only after consent.</CardDescription>
         </CardHeader>
         <CardContent className="space-y-4">
-          <Toggle label="IndexedDB persistence consent" checked={persistenceConsent} onChange={(value) => void setPersistenceConsent(value)} />
+          <Toggle label="Remember this analysis on this browser" checked={persistenceConsent} onChange={(value) => void setPersistenceConsent(value)} />
           <Toggle label="Strict privacy masking" checked={strictPrivacy} onChange={setStrictPrivacy} />
           <Toggle label="Parser debug panel" checked={debugMode} onChange={setDebugMode} />
-          <Button variant="danger" onClick={() => void reset()}>
+          <Button
+            variant="danger"
+            onClick={() => {
+              if (window.confirm("This clears uploaded data, normalized records, parser summaries, symptoms, and local settings from this browser.")) {
+                void reset();
+              }
+            }}
+          >
             <RotateCcw className="h-4 w-4" />
-            Delete/reset all local data
+            Delete local analysis
           </Button>
         </CardContent>
       </Card>
@@ -47,4 +54,3 @@ function Toggle({ label, checked, onChange }: { label: string; checked: boolean;
     </label>
   );
 }
-

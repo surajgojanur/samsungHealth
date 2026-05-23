@@ -28,7 +28,9 @@ export function parseSleep(files: SamsungCsvFile[]): { sleep: SleepSession[]; wa
       const start = rowTimestamp(row, ["com_samsung_health_sleep_start_time", "start_time"]);
       const end = rowTimestamp(row, ["com_samsung_health_sleep_end_time", "end_time"]);
       if (!start.iso || !end.iso || !start.localDate) return;
-      const id = firstString(row, ["com_samsung_health_sleep_datauuid", "datauuid", "combined_id"]) ?? `${file.fileName}:${rowIndex}`;
+      const rawJoinId = firstString(row, ["com_samsung_health_sleep_datauuid", "datauuid", "combined_id"]);
+      const combinedId = firstString(row, ["combined_id"]);
+      const id = `${file.fileName}:${rowIndex}`;
       const explicit = firstNumber(row, ["sleep_duration"]);
       const duration = durationMinutes(start.iso, end.iso, undefined, explicit && explicit < 2_000 ? explicit : undefined);
       sessions.push({
@@ -39,7 +41,7 @@ export function parseSleep(files: SamsungCsvFile[]): { sleep: SleepSession[]; wa
         durationMinutes: duration ?? 0,
         sleepScore: firstNumber(row, ["sleep_score"]),
         efficiency: firstNumber(row, ["efficiency", "original_efficiency"]),
-        stages: stagesById.get(id) ?? stagesById.get(firstString(row, ["combined_id"]) ?? "") ?? undefined,
+        stages: stagesById.get(rawJoinId ?? "") ?? stagesById.get(combinedId ?? "") ?? undefined,
         source: sourceFor(file, row, rowIndex, "high")
       });
     });
@@ -62,4 +64,3 @@ function mapStage(stage?: number): SleepStageSegment["stage"] {
       return "unknown";
   }
 }
-

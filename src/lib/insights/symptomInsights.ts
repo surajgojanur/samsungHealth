@@ -81,15 +81,9 @@ export function analyzeSymptomPatterns(data: NormalizedHealthData, symptoms: Sym
     .map((symptom) => `${Math.round((symptom.durationSeconds ?? 0) / 60)} min`)
     .slice(0, 3)
     .join(", ");
+  const primarySymptom = symptomTypes[0] ?? "symptoms";
   const doctorReadyNote = symptoms.length
-    ? `Symptoms logged: ${symptomTypes.join(", ")}, ${symptoms.length} events. Average severity: ${severity ? `${formatNumber(severity, 1)}/10` : "not recorded"}. Typical duration examples: ${commonDurations || "not recorded"}. Nearby patterns: ${[
-        lowSleepEvents ? "shorter sleep on some events" : "",
-        highActivityEvents ? "higher activity on some events" : "",
-        highWorkoutLoadEvents ? "higher workout load on some events" : "",
-        highHeartRateEvents ? "higher heart-rate days on some events" : ""
-      ]
-        .filter(Boolean)
-        .join(", ") || "no clear repeated pattern yet"}.`
+    ? `You logged ${primarySymptom} ${symptoms.length} ${symptoms.length === 1 ? "time" : "times"}. ${lowSleepEvents} of those happened after shorter-than-usual sleep, and ${highActivityEvents} happened on higher-activity days. This does not prove a cause, but it may be useful to discuss with a doctor if symptoms continue. Average severity: ${severity ? `${formatNumber(severity, 1)}/10` : "not recorded"}. Typical duration examples: ${commonDurations || "not recorded"}.`
     : "No symptoms logged yet.";
 
   return {
@@ -186,7 +180,7 @@ export function generateSymptomInsights(input: InsightEngineInput): HealthInsigh
         sourceMetrics: ["symptom log", phrase],
         limitations: summary.eventCount < 5 ? ["There are only a few symptom events, so confidence is limited."] : undefined,
         relatedCharts: ["symptoms"],
-        doctorDiscussion: `Ask whether symptoms could be related to ${phrase}, caffeine, stress, hydration, or device-captured activity context.`,
+        doctorDiscussion: `Ask whether symptoms may be related to ${phrase}, caffeine, stress, hydration, or device accuracy.`,
         priorityScore: 82
       })
     );
@@ -213,4 +207,3 @@ export function generateSymptomInsights(input: InsightEngineInput): HealthInsigh
 
   return insights;
 }
-

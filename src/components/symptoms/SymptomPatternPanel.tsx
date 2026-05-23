@@ -31,7 +31,7 @@ export function SymptomPatternPanel({ data, symptoms }: { data: NormalizedHealth
     <Card>
       <CardHeader className="flex flex-col justify-between gap-3 md:flex-row md:items-start">
         <div>
-          <CardTitle>What happened around your symptoms?</CardTitle>
+          <CardTitle>Symptom Pattern Timeline</CardTitle>
           <CardDescription>Compares symptom timing with prior sleep, same-day activity, workouts, heart rate, SpO2, stress records, and notes.</CardDescription>
         </div>
         <Button type="button" variant="secondary" onClick={exportTimeline} disabled={!symptoms.length}>
@@ -43,6 +43,9 @@ export function SymptomPatternPanel({ data, symptoms }: { data: NormalizedHealth
         <div className="rounded-md border bg-background p-4">
           <p className="font-medium">Possible patterns</p>
           <div className="mt-3 space-y-2 text-sm text-muted-foreground">
+            <p>Symptom frequency: {pattern.eventCount} events</p>
+            <p>Average severity: {pattern.averageSeverity ? `${pattern.averageSeverity.toFixed(1)}/10` : "not recorded"}</p>
+            <p>Cluster days: {new Set(pattern.contexts.map((context) => context.symptom.localDate)).size}</p>
             <p>Near shorter sleep: {pattern.lowSleepEvents}/{pattern.eventCount}</p>
             <p>Near higher activity: {pattern.highActivityEvents}/{pattern.eventCount}</p>
             <p>Near higher workout load: {pattern.highWorkoutLoadEvents}/{pattern.eventCount}</p>
@@ -52,7 +55,7 @@ export function SymptomPatternPanel({ data, symptoms }: { data: NormalizedHealth
         <div className="rounded-md border bg-background p-4">
           <p className="font-medium">{pattern.eventCount ? "Doctor-ready symptom note" : "No clear pattern found"}</p>
           <p className="mt-3 text-sm text-muted-foreground">
-            {pattern.eventCount ? pattern.doctorReadyNote : "No symptoms logged yet. Add symptoms to compare them with sleep, activity, heart trends, workouts, and notes."}
+            {pattern.eventCount ? pattern.doctorReadyNote : "No symptoms logged yet. Add symptoms to compare them with sleep, activity, heart rate, workouts, and SpO2 trends."}
           </p>
         </div>
         <div className="lg:col-span-2">
@@ -72,11 +75,12 @@ export function SymptomPatternPanel({ data, symptoms }: { data: NormalizedHealth
               ))}
             </div>
           ) : (
-            <div className="flex h-32 items-center justify-center rounded-md border border-dashed text-sm text-muted-foreground">No symptoms logged yet.</div>
+            <div className="flex h-32 items-center justify-center rounded-md border border-dashed p-4 text-center text-sm text-muted-foreground">
+              No symptoms logged yet. Add symptoms to compare them with sleep, activity, heart rate, workouts, and SpO2 trends.
+            </div>
           )}
         </div>
       </CardContent>
     </Card>
   );
 }
-

@@ -2,18 +2,23 @@ import { Lock, ServerOff, ShieldCheck, Trash2 } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 
 const items = [
-  { icon: ServerOff, title: "Local-first", text: "Samsung Health files are parsed in your browser. No raw upload is required by default." },
-  { icon: Lock, title: "Storage by consent", text: "IndexedDB persistence is disabled unless you explicitly turn it on in settings." },
+  { icon: ServerOff, title: "Local-first", text: "Your files are processed entirely inside your browser. You can disconnect from the internet after loading the app, and local analysis will still work." },
+  { icon: Lock, title: "No server upload by default", text: "Raw Samsung Health files are not sent to a server by default." },
+  { icon: ShieldCheck, title: "No account required", text: "HealthLens does not require a cloud account for local analysis." },
+  { icon: ShieldCheck, title: "No tracking by default", text: "The app does not include analytics tracking by default." },
+  { icon: Lock, title: "IndexedDB only after consent", text: "Remember this analysis on this browser is unchecked by default." },
   { icon: ShieldCheck, title: "Masked outputs", text: "Names, emails, account IDs, device IDs, UUIDs, locations, comments, and images are masked or excluded." },
-  { icon: Trash2, title: "Reset anytime", text: "The reset control clears parser state, cached normalized records, symptom logs, and IndexedDB." }
+  { icon: Trash2, title: "Reset anytime", text: "Delete local analysis clears uploaded data, normalized records, parser summaries, symptoms, and local settings from this browser." }
 ];
 
 export default function PrivacyPage() {
   return (
     <div className="space-y-6">
       <div>
-        <h1 className="text-3xl font-semibold">Privacy</h1>
-        <p className="mt-2 max-w-3xl text-muted-foreground">HealthLens is designed for private health-data review. The MVP does not render meal/profile images or route maps and does not send raw data to a server.</p>
+        <h1 className="text-3xl font-semibold">Privacy and trust</h1>
+        <p className="mt-2 max-w-3xl text-muted-foreground">
+          Your files are processed entirely inside your browser. You can disconnect from the internet after loading the app, and local analysis will still work.
+        </p>
       </div>
       <div className="grid gap-4 md:grid-cols-2">
         {items.map((item) => {
@@ -45,4 +50,3 @@ export default function PrivacyPage() {
     </div>
   );
 }
-

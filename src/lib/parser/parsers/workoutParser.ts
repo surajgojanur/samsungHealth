@@ -15,7 +15,7 @@ export function parseWorkouts(files: SamsungCsvFile[]): { workouts: WorkoutSessi
       const durationMs = firstNumber(row, ["com_samsung_health_exercise_duration", "duration"]);
       const duration = durationMinutes(start.iso, end.iso, durationMs);
       workouts.push({
-        id: firstString(row, ["com_samsung_health_exercise_datauuid", "datauuid"]) ?? `${file.fileName}:${rowIndex}`,
+        id: `${file.fileName}:${rowIndex}`,
         startTime: start.iso,
         endTime: end.iso,
         localDate: start.localDate,
@@ -31,4 +31,3 @@ export function parseWorkouts(files: SamsungCsvFile[]): { workouts: WorkoutSessi
   }
   return { workouts: workouts.sort((a, b) => a.startTime.localeCompare(b.startTime)), warnings };
 }
-

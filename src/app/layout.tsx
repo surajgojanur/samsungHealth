@@ -7,8 +7,16 @@ import { StoreHydrator } from "@/components/StoreHydrator";
 const inter = Inter({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
-  title: "HealthLens",
-  description: "Private Samsung Health export dashboard and doctor report."
+  title: "HealthLens — Samsung Health Insights",
+  description:
+    "Turn your Samsung Health export into a private, local-first dashboard with insights, symptom patterns, data-quality checks, and doctor-ready reports.",
+  openGraph: {
+    title: "HealthLens — Private Samsung Health Insights",
+    description:
+      "Analyze Samsung Health exports locally in your browser. Get plain-language insights, symptom timelines, and doctor-ready summaries without server upload by default.",
+    type: "website",
+    siteName: "HealthLens"
+  }
 };
 
 export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
@@ -21,4 +29,3 @@ export default function RootLayout({ children }: Readonly<{ children: React.Reac
     </html>
   );
 }
-

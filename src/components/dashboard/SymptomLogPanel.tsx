@@ -30,6 +30,7 @@ export function SymptomLogPanel() {
   const [bodyLocation, setBodyLocation] = useState("");
   const [beforeEvent, setBeforeEvent] = useState("");
   const [notes, setNotes] = useState("");
+  const [flags, setFlags] = useState({ caffeine: false, workout: false, poorSleep: false, stress: false, doctorNote: false });
 
   async function submit(event: React.FormEvent) {
     event.preventDefault();
@@ -44,40 +45,74 @@ export function SymptomLogPanel() {
       durationSeconds: duration ? Number(duration) * 60 : undefined,
       bodyLocation: bodyLocation || undefined,
       beforeEvent: beforeEvent || undefined,
-      notes: notes || undefined
+      notes: notes || undefined,
+      flags: {
+        caffeine: flags.caffeine,
+        workout: flags.workout,
+        poorSleep: flags.poorSleep,
+        stress: flags.stress,
+        doctorNote: flags.doctorNote
+      }
     });
     setNotes("");
     setCustom("");
     setBeforeEvent("");
+    setFlags({ caffeine: false, workout: false, poorSleep: false, stress: false, doctorNote: false });
   }
 
   return (
     <Card>
       <CardHeader>
-        <CardTitle>Symptom Timeline</CardTitle>
+        <CardTitle>Symptom Pattern Timeline</CardTitle>
         <CardDescription>Samsung Health does not include symptoms in this export, so HealthLens stores these local notes separately.</CardDescription>
       </CardHeader>
       <CardContent className="grid gap-5 lg:grid-cols-[380px_minmax(0,1fr)]">
         <form className="space-y-3" onSubmit={(event) => void submit(event)}>
-          <select className="h-10 w-full rounded-md border bg-background px-3 text-sm" value={type} onChange={(event) => setType(event.target.value as SymptomLog["symptomType"])}>
+          <Field label="Symptom type">
+            <select id="symptom-type" className="h-10 w-full rounded-md border bg-background px-3 text-sm" value={type} onChange={(event) => setType(event.target.value as SymptomLog["symptomType"])}>
             {symptomTypes.map((item) => (
               <option key={item.value} value={item.value}>
                 {item.label}
               </option>
             ))}
-          </select>
-          {type === "other" ? <Input placeholder="Custom symptom" value={custom} onChange={(event) => setCustom(event.target.value)} /> : null}
-          <Input type="datetime-local" value={dateTime} onChange={(event) => setDateTime(event.target.value)} />
-          <Input placeholder="Body location" value={bodyLocation} onChange={(event) => setBodyLocation(event.target.value)} />
-          <Input type="number" min={1} max={10} value={severity} onChange={(event) => setSeverity(Number(event.target.value))} />
-          <Input placeholder="Duration in minutes" value={duration} onChange={(event) => setDuration(event.target.value)} />
-          <Input placeholder="What happened before?" value={beforeEvent} onChange={(event) => setBeforeEvent(event.target.value)} />
-          <textarea
-            className="min-h-20 w-full rounded-md border bg-background px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-ring"
-            placeholder="Notes for doctor discussion"
-            value={notes}
-            onChange={(event) => setNotes(event.target.value)}
-          />
+            </select>
+          </Field>
+          {type === "other" ? (
+            <Field label="Custom symptom">
+              <Input id="custom-symptom" value={custom} onChange={(event) => setCustom(event.target.value)} />
+            </Field>
+          ) : null}
+          <Field label="Date/time">
+            <Input id="symptom-date-time" type="datetime-local" value={dateTime} onChange={(event) => setDateTime(event.target.value)} />
+          </Field>
+          <Field label="Body location">
+            <Input id="body-location" value={bodyLocation} onChange={(event) => setBodyLocation(event.target.value)} />
+          </Field>
+          <Field label="Severity 1-10">
+            <Input id="severity" aria-describedby="severity-help" type="number" min={1} max={10} value={severity} onChange={(event) => setSeverity(Number(event.target.value))} />
+          </Field>
+          <p id="severity-help" className="sr-only">Choose a severity from 1 to 10.</p>
+          <Field label="Duration in minutes">
+            <Input id="duration" inputMode="numeric" value={duration} onChange={(event) => setDuration(event.target.value)} />
+          </Field>
+          <Field label="What happened before?">
+            <Input id="before-event" value={beforeEvent} onChange={(event) => setBeforeEvent(event.target.value)} />
+          </Field>
+          <div className="grid gap-2 rounded-md border p-3 text-sm">
+            <Checkbox label="Caffeine recently?" checked={flags.caffeine} onChange={(value) => setFlags((current) => ({ ...current, caffeine: value }))} />
+            <Checkbox label="Workout recently?" checked={flags.workout} onChange={(value) => setFlags((current) => ({ ...current, workout: value }))} />
+            <Checkbox label="Poor sleep?" checked={flags.poorSleep} onChange={(value) => setFlags((current) => ({ ...current, poorSleep: value }))} />
+            <Checkbox label="Stress?" checked={flags.stress} onChange={(value) => setFlags((current) => ({ ...current, stress: value }))} />
+            <Checkbox label="Mark for doctor report" checked={flags.doctorNote} onChange={(value) => setFlags((current) => ({ ...current, doctorNote: value }))} />
+          </div>
+          <Field label="Notes">
+            <textarea
+              id="symptom-notes"
+              className="min-h-20 w-full rounded-md border bg-background px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-ring"
+              value={notes}
+              onChange={(event) => setNotes(event.target.value)}
+            />
+          </Field>
           <Button type="submit" className="w-full">
             <Plus className="h-4 w-4" />
             Add symptom
@@ -85,7 +120,9 @@ export function SymptomLogPanel() {
         </form>
         <div className="space-y-2">
           {symptoms.length === 0 ? (
-            <div className="flex h-full min-h-64 items-center justify-center rounded-md border border-dashed text-sm text-muted-foreground">No symptom logs yet.</div>
+            <div className="flex h-full min-h-64 items-center justify-center rounded-md border border-dashed p-4 text-center text-sm text-muted-foreground">
+              No symptoms logged yet. Add symptoms to compare them with sleep, activity, heart rate, workouts, and SpO2 trends.
+            </div>
           ) : (
             symptoms.map((symptom) => (
               <div key={symptom.id} className="flex items-start justify-between rounded-md border p-3">
@@ -109,3 +146,22 @@ export function SymptomLogPanel() {
   );
 }
 
+function Field({ label, children }: { label: string; children: React.ReactElement<{ id?: string }> }) {
+  return (
+    <div className="space-y-1">
+      <label htmlFor={children.props.id} className="text-sm font-medium">
+        {label}
+      </label>
+      {children}
+    </div>
+  );
+}
+
+function Checkbox({ label, checked, onChange }: { label: string; checked: boolean; onChange: (checked: boolean) => void }) {
+  return (
+    <label className="flex items-center gap-2">
+      <input type="checkbox" checked={checked} onChange={(event) => onChange(event.target.checked)} className="h-4 w-4 accent-primary" />
+      <span>{label}</span>
+    </label>
+  );
+}

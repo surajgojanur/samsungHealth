@@ -50,11 +50,10 @@ export function generateHealthStory(data: NormalizedHealthData, symptoms: Sympto
     title: "Your Health Story",
     oneLineSummary: sanitizeGeneratedHealthText(oneLine),
     detailedSummary: sanitizeGeneratedHealthText(detailed),
-    topPositivePattern: activity?.plainLanguage,
-    topAttentionPattern: topAttention,
-    symptomPattern,
-    dataLimitations,
+    topPositivePattern: activity?.plainLanguage ? sanitizeGeneratedHealthText(activity.plainLanguage) : undefined,
+    topAttentionPattern: topAttention ? sanitizeGeneratedHealthText(topAttention) : undefined,
+    symptomPattern: sanitizeGeneratedHealthText(symptomPattern),
+    dataLimitations: dataLimitations.map(sanitizeGeneratedHealthText),
     doctorReadySummary: sanitizeGeneratedHealthText(doctorReady)
   };
 }
-
