@@ -1,0 +1,46 @@
+# dependencies
+node_modules/
+
+# Next.js build output
+.next/
+out/
+
+# production builds and caches
+dist/
+build/
+.turbo/
+.vercel/
+*.tsbuildinfo
+
+# test and coverage output
+coverage/
+playwright-report/
+test-results/
+
+# environment and local secrets
+.env
+.env.*
+!.env.example
+
+# logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+# local health exports and user data
+*.zip
+/private-samples/
+/sample-uploads/
+/real-user-data/
+/exports/
+/health-data/
+samsunghealth_*/
+
+# editor and OS files
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/
+*.swp
