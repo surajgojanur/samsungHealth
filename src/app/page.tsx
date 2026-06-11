@@ -1,136 +1,252 @@
 import Link from "next/link";
-import { ArrowRight, BarChart3, FileArchive, FileText, Github, HeartPulse, Lock, Microscope, ShieldCheck, Sparkles, Stethoscope, UploadCloud } from "lucide-react";
+import Image from "next/image";
+import { ArrowRight, BarChart3, CheckCircle2, FileArchive, FileText, Github, HeartPulse, Lock, Microscope, ShieldCheck, Sparkles, Stethoscope, UploadCloud } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 
 export default function LandingPage() {
   return (
-    <div className="space-y-14">
-      <section className="grid min-h-[72vh] items-center gap-8 lg:grid-cols-[minmax(0,1fr)_430px]">
-        <div className="space-y-6">
-          <div className="flex flex-wrap gap-2">
-            <Badge tone="good">Processed locally in your browser</Badge>
-            <Badge>For personal tracking and doctor discussion only</Badge>
+    <div className="space-y-24 pb-20">
+      {/* Hero Section */}
+      <section className="relative overflow-hidden py-10 md:py-20">
+        <div className="grid gap-12 lg:grid-cols-2 lg:items-center">
+          <div className="relative z-10 space-y-8">
+            <div className="inline-flex items-center gap-2 rounded-full border bg-white/50 px-3 py-1 text-sm font-medium backdrop-blur-sm dark:bg-slate-950/50">
+              <Badge tone="good" className="rounded-full">Private</Badge>
+              <span className="text-muted-foreground">Processed locally in your browser</span>
+            </div>
+            
+            <div className="space-y-4">
+              <h1 className="text-4xl font-extrabold tracking-tight sm:text-6xl lg:text-7xl">
+                Unlock your <span className="text-primary">Samsung Health</span> data.
+              </h1>
+              <p className="max-w-xl text-xl leading-relaxed text-muted-foreground">
+                Upload your Samsung Health export and get private health insights, symptom patterns, and doctor-ready reports. No server upload. No account required.
+              </p>
+            </div>
+
+            <div className="flex flex-wrap gap-4">
+              <Button asChild size="lg" className="h-14 rounded-full px-8 text-lg shadow-lg shadow-primary/20 transition-all hover:scale-105">
+                <Link href="/upload">
+                  Analyze My Export
+                  <ArrowRight className="ml-2 h-5 w-5" />
+                </Link>
+              </Button>
+              <Button asChild size="lg" variant="outline" className="h-14 rounded-full px-8 text-lg transition-all hover:bg-muted">
+                <Link href="/demo">Try Demo</Link>
+              </Button>
+            </div>
+
+            <div className="flex items-center gap-6 pt-4 text-sm text-muted-foreground">
+              <div className="flex items-center gap-2">
+                <Lock className="h-4 w-4" />
+                <span>100% Private</span>
+              </div>
+              <div className="flex items-center gap-2">
+                <ShieldCheck className="h-4 w-4" />
+                <span>Local-first</span>
+              </div>
+              <div className="flex items-center gap-2">
+                <CheckCircle2 className="h-4 w-4" />
+                <span>Open Source</span>
+              </div>
+            </div>
           </div>
-          <div>
-            <p className="text-lg font-semibold">HealthLens</p>
-            <p className="text-sm text-muted-foreground">Samsung Health Insights</p>
+
+          <div className="relative lg:ml-10">
+            <div className="absolute -inset-4 rounded-[2rem] bg-gradient-to-tr from-primary/20 to-secondary/20 blur-2xl" />
+            <Card className="relative overflow-hidden border-2 shadow-2xl">
+              <div className="bg-muted/50 p-4 border-b">
+                <div className="flex gap-1.5">
+                  <div className="h-3 w-3 rounded-full bg-red-400" />
+                  <div className="h-3 w-3 rounded-full bg-amber-400" />
+                  <div className="h-3 w-3 rounded-full bg-emerald-400" />
+                </div>
+              </div>
+              <CardContent className="p-0">
+                <Image 
+                  src="/docs/assets/overview.png" 
+                  alt="HealthLens Dashboard Preview" 
+                  width={800}
+                  height={500}
+                  className="w-full object-cover"
+                />
+              </CardContent>
+            </Card>
           </div>
-          <h1 className="max-w-4xl text-4xl font-semibold tracking-normal md:text-6xl">Turn your Samsung Health export into private, understandable insights.</h1>
-          <p className="max-w-2xl text-lg text-muted-foreground">
-            Upload your Samsung Health export ZIP or folder and get a local-first dashboard, plain-language insights, symptom patterns, data-quality checks, and a doctor-ready summary — without sending your raw health files to a server.
-          </p>
-          <div className="flex flex-wrap gap-3">
-            <Button asChild size="lg">
-              <Link href="/upload">
-                Analyze my export
-                <ArrowRight className="h-4 w-4" />
-              </Link>
-            </Button>
-            <Button asChild size="lg" variant="secondary">
-              <Link href="/demo">View sample dashboard</Link>
-            </Button>
-          </div>
-          <p className="max-w-2xl text-sm text-muted-foreground">HealthLens is an independent open-source project and is not affiliated with Samsung.</p>
         </div>
-        <div className="grid gap-3">
+      </section>
+
+      {/* How it works */}
+      <section className="space-y-12">
+        <div className="text-center space-y-4">
+          <h2 className="text-3xl font-bold sm:text-4xl">Get insights in 4 simple steps</h2>
+          <p className="mx-auto max-w-2xl text-muted-foreground">
+            No technical skills needed. Just follow these steps to turn your raw Samsung Health files into a meaningful health story.
+          </p>
+        </div>
+
+        <div className="grid gap-8 md:grid-cols-2 lg:grid-cols-4">
           {[
-            { icon: FileArchive, title: "1. Export Samsung Health data", text: "Use Samsung Health personal data export from your phone." },
-            { icon: UploadCloud, title: "2. Upload ZIP/folder", text: "ZIP, folder, or manual CSV/JSON selection, all parsed in-browser." },
-            { icon: FileText, title: "3. Get dashboard and doctor report", text: "Trends, data quality, symptoms, and exportable reports." }
+            { step: 1, icon: HeartPulse, title: "Export Data", text: "Open Samsung Health on your phone and export your personal data." },
+            { step: 2, icon: FileArchive, title: "Upload ZIP", text: "Drop your export ZIP or folder into HealthLens. It stays in your browser." },
+            { step: 3, icon: Sparkles, title: "View Insights", text: "See trends, sleep patterns, and data quality checks in plain English." },
+            { step: 4, icon: Stethoscope, title: "Doctor Report", text: "Download a clean, masked summary for your next appointment." }
           ].map((item) => {
             const Icon = item.icon;
             return (
-              <Card key={item.title}>
-                <CardHeader className="flex flex-row items-center gap-3 space-y-0">
-                  <span className="flex h-10 w-10 items-center justify-center rounded-md bg-primary/10 text-primary">
-                    <Icon className="h-5 w-5" />
-                  </span>
-                  <CardTitle>{item.title}</CardTitle>
-                </CardHeader>
-                <CardContent className="text-sm text-muted-foreground">{item.text}</CardContent>
-              </Card>
+              <div key={item.step} className="group relative space-y-4 rounded-2xl border bg-card p-6 transition-all hover:border-primary/50 hover:shadow-md">
+                <div className="absolute -right-2 -top-2 flex h-8 w-8 items-center justify-center rounded-full bg-primary text-sm font-bold text-primary-foreground shadow-sm">
+                  {item.step}
+                </div>
+                <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-primary/10 text-primary transition-colors group-hover:bg-primary group-hover:text-primary-foreground">
+                  <Icon className="h-6 w-6" />
+                </div>
+                <h3 className="font-bold text-xl">{item.title}</h3>
+                <p className="text-sm leading-relaxed text-muted-foreground">{item.text}</p>
+              </div>
             );
           })}
-          <Card className="border-primary/30">
-            <CardContent className="flex items-center gap-3 p-5">
-              <Lock className="h-5 w-5 text-primary" />
-              <p className="text-sm">Your files are processed inside your browser. No cloud account. No server upload by default. No tracking by default.</p>
-            </CardContent>
-          </Card>
         </div>
       </section>
 
-      <Section title="What you get">
-        {[
-          { icon: Sparkles, title: "Health Story", text: "A calm summary of the strongest patterns, improvements, limitations, and doctor discussion points." },
-          { icon: Microscope, title: "Insight Hub", text: "Plain-English trend, baseline, outlier, symptom, and data-quality insights with confidence labels." },
-          { icon: BarChart3, title: "Symptom Pattern Timeline", text: "Optional local symptom logs compared with sleep, activity, heart rate, workouts, and SpO2 trends." },
-          { icon: Stethoscope, title: "Doctor-Ready Summary", text: "A masked, practical report for appointments and personal notes." },
-          { icon: ShieldCheck, title: "Data Quality Report", text: "Readable coverage, missing-category, sparse-data, and parser warning summaries." },
-          { icon: Lock, title: "Private Local Processing", text: "No account, no tracking by default, and IndexedDB storage only after consent." }
-        ].map((item) => (
-          <FeatureCard key={item.title} {...item} />
-        ))}
-      </Section>
-
-      <section className="grid gap-4 md:grid-cols-2">
-        <Card>
-          <CardHeader>
-            <CardTitle>Privacy promise</CardTitle>
-          </CardHeader>
-          <CardContent className="text-sm leading-6 text-muted-foreground">
-            Your files are processed inside your browser. No cloud account. No server upload by default. No tracking by default.
-          </CardContent>
-        </Card>
-        <Card>
-          <CardHeader>
-            <CardTitle>Demo mode</CardTitle>
-          </CardHeader>
-          <CardContent className="space-y-4 text-sm leading-6 text-muted-foreground">
-            <p>Open a fake-data demo before uploading personal data. It includes a Health Story, Insight Hub, symptom patterns, data quality, and doctor report preview.</p>
-            <Button asChild variant="secondary">
-              <Link href="/demo">Open fake-data demo</Link>
-            </Button>
-          </CardContent>
-        </Card>
-      </section>
-
-      <section className="rounded-md border bg-card p-6">
-        <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
-          <div>
-            <h2 className="text-2xl font-semibold">Open source and transparent</h2>
-            <p className="mt-2 max-w-3xl text-sm leading-6 text-muted-foreground">
-              Local-first, TypeScript, Next.js, privacy-first, built for learning and transparency, and GitHub-ready for parser and insight contributions.
+      {/* Why HealthLens */}
+      <section className="rounded-3xl bg-slate-900 px-6 py-16 text-white dark:bg-slate-950 sm:px-12 lg:px-16">
+        <div className="grid gap-12 lg:grid-cols-2 lg:items-center">
+          <div className="space-y-8">
+            <h2 className="text-3xl font-bold sm:text-4xl lg:text-5xl">Your health data is <span className="text-primary">none of our business.</span></h2>
+            <p className="text-lg text-slate-300">
+              Most health apps want your data in the cloud. We don't. HealthLens is built on a "local-first" philosophy. Your sensitive health files never leave your computer.
             </p>
+            <ul className="space-y-4">
+              {[
+                "No account or login required",
+                "Raw health files are processed in-browser",
+                "No cloud tracking or hidden analytics",
+                "100% Open source and transparent"
+              ].map((feature) => (
+                <li key={feature} className="flex items-center gap-3">
+                  <CheckCircle2 className="h-5 w-5 text-primary" />
+                  <span>{feature}</span>
+                </li>
+              ))}
+            </ul>
+            <Button asChild variant="secondary" size="lg" className="rounded-full">
+              <Link href="/privacy">Read our Privacy Promise</Link>
+            </Button>
           </div>
-          <Github className="h-8 w-8 text-primary" aria-hidden="true" />
+          <div className="grid gap-4 sm:grid-cols-2">
+            {[
+              { icon: ShieldCheck, title: "Secure", text: "Bank-level privacy through local processing." },
+              { icon: Lock, title: "Private", text: "No servers means no data breaches." },
+              { icon: BarChart3, title: "Powerful", text: "Advanced analytics without the privacy cost." },
+              { icon: Microscope, title: "Accurate", text: "Direct parsing of original Samsung Health CSVs." }
+            ].map((item) => (
+              <div key={item.title} className="rounded-2xl border border-slate-800 bg-slate-800/50 p-6">
+                <item.icon className="mb-4 h-8 w-8 text-primary" />
+                <h4 className="mb-2 font-bold">{item.title}</h4>
+                <p className="text-sm text-slate-400">{item.text}</p>
+              </div>
+            ))}
+          </div>
         </div>
+      </section>
+
+      {/* Features Grid */}
+      <section className="space-y-12">
+        <div className="text-center space-y-4">
+          <h2 className="text-3xl font-bold sm:text-4xl">Everything you need to understand your health</h2>
+          <p className="mx-auto max-w-2xl text-muted-foreground">
+            HealthLens analyzes your Samsung Health export to find patterns you might miss.
+          </p>
+        </div>
+
+        <div className="grid gap-6 md:grid-cols-2 xl:grid-cols-3">
+          {[
+            { icon: Sparkles, title: "Health Story", text: "A plain-English summary of your strongest patterns, improvements, and discussion points." },
+            { icon: Microscope, title: "Insight Hub", text: "Trend, baseline, and outlier detection with confidence labels for every health category." },
+            { icon: BarChart3, title: "Symptom Timeline", text: "Compare your local symptom logs with sleep, activity, heart rate, and workouts." },
+            { icon: Stethoscope, title: "Doctor-Ready Summary", text: "A practical, masked report designed for clinical appointments or personal notes." },
+            { icon: ShieldCheck, title: "Data Quality Audit", text: "See which categories have enough data for high-confidence insights." },
+            { icon: Lock, title: "No Account Required", text: "Start analyzing immediately. We don't need your email or phone number." }
+          ].map((item) => (
+            <Card key={item.title} className="border-none bg-slate-50 shadow-none dark:bg-slate-900">
+              <CardHeader className="flex flex-row items-center gap-4">
+                <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-white text-primary shadow-sm dark:bg-slate-800">
+                  <item.icon className="h-6 w-6" />
+                </div>
+                <CardTitle className="text-xl">{item.title}</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <p className="text-muted-foreground leading-relaxed">{item.text}</p>
+              </CardContent>
+            </Card>
+          ))}
+        </div>
+      </section>
+
+      {/* FAQ Section */}
+      <section className="mx-auto max-w-4xl space-y-12">
+        <div className="text-center space-y-4">
+          <h2 className="text-3xl font-bold sm:text-4xl">Frequently Asked Questions</h2>
+          <p className="text-muted-foreground">Common questions about HealthLens and Samsung Health data.</p>
+        </div>
+
+        <div className="grid gap-6">
+          {[
+            {
+              q: "Is my data uploaded to any server?",
+              a: "No. HealthLens uses 'in-browser' parsing. When you drop a file, your browser reads it locally. No health data is sent to our servers or any third parties."
+            },
+            {
+              q: "How do I export Samsung Health data?",
+              a: "Open Samsung Health on your phone > Settings > Download personal data. You'll receive a ZIP file containing your health records."
+            },
+            {
+              q: "Is this medical advice?",
+              a: "No. HealthLens is a data visualization and pattern detection tool. It is intended for personal tracking and to facilitate discussions with your doctor. Always consult a medical professional for health concerns."
+            },
+            {
+              q: "Can I try it without uploading my own data?",
+              a: "Yes! Click the 'Try Demo' button at the top to see how HealthLens works with sample data."
+            },
+            {
+              q: "What data types are supported?",
+              a: "We support steps, sleep, heart rate, workouts, SpO2, stress, water, nutrition, and body metrics exported from Samsung Health."
+            }
+          ].map((item, i) => (
+            <div key={i} className="rounded-2xl border bg-card p-6">
+              <h3 className="mb-2 text-lg font-bold">{item.q}</h3>
+              <p className="text-muted-foreground">{item.a}</p>
+            </div>
+          ))}
+        </div>
+      </section>
+
+      {/* CTA Footer */}
+      <section className="text-center space-y-8 rounded-[3rem] bg-primary/5 py-16 dark:bg-primary/10">
+        <div className="mx-auto max-w-2xl space-y-4">
+          <h2 className="text-3xl font-bold sm:text-4xl">Ready to see your health story?</h2>
+          <p className="text-lg text-muted-foreground">
+            Join thousands of users who analyze their Samsung Health data privately.
+          </p>
+        </div>
+        <div className="flex flex-wrap justify-center gap-4">
+          <Button asChild size="lg" className="rounded-full px-10">
+            <Link href="/upload">Analyze My Export</Link>
+          </Button>
+          <Button asChild size="lg" variant="ghost" className="rounded-full px-10">
+            <Link href="https://github.com/surajgojanur/samsungHealth" target="_blank">
+              <Github className="mr-2 h-5 w-5" />
+              View on GitHub
+            </Link>
+          </Button>
+        </div>
+        <p className="text-sm text-muted-foreground">
+          HealthLens is an independent open-source project and is not affiliated with Samsung.
+        </p>
       </section>
     </div>
-  );
-}
-
-function Section({ title, children }: { title: string; children: React.ReactNode }) {
-  return (
-    <section className="space-y-4">
-      <h2 className="text-2xl font-semibold">{title}</h2>
-      <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">{children}</div>
-    </section>
-  );
-}
-
-function FeatureCard({ icon: Icon, title, text }: { icon: React.ComponentType<{ className?: string }>; title: string; text: string }) {
-  return (
-    <Card>
-      <CardHeader className="flex flex-row items-center gap-3 space-y-0">
-        <span className="flex h-10 w-10 items-center justify-center rounded-md bg-primary/10 text-primary">
-          <Icon className="h-5 w-5" />
-        </span>
-        <CardTitle>{title}</CardTitle>
-      </CardHeader>
-      <CardContent className="text-sm leading-6 text-muted-foreground">{text}</CardContent>
-    </Card>
   );
 }

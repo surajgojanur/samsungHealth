@@ -1,6 +1,6 @@
 "use client";
 
-import { Activity, AlertCircle, BarChart3, Droplets, Dumbbell, FilePlus2, HeartPulse, LineChart, Moon, Scale, ShieldCheck, Sparkles, Stethoscope, ToggleLeft, ToggleRight, Utensils } from "lucide-react";
+import { Activity, AlertCircle, BarChart3, CheckCircle2, ChevronRight, Droplets, Dumbbell, HeartPulse, LineChart, Moon, Plus, Scale, ShieldCheck, Sparkles, Stethoscope, Utensils } from "lucide-react";
 import type { HealthInsight, InsightCategory } from "@/lib/insights/insightTypes";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -35,54 +35,73 @@ function insightTone(tone: HealthInsight["tone"]) {
 export function InsightCard({ insight, added, onToggleReport }: { insight: HealthInsight; added?: boolean; onToggleReport?: (id: string) => void }) {
   const Icon = icons[insight.category];
   return (
-    <Card className="overflow-hidden">
-      <CardHeader className="space-y-3">
+    <Card className="flex flex-col h-full overflow-hidden border-none bg-slate-50 dark:bg-slate-900 shadow-none hover:bg-slate-100/80 dark:hover:bg-slate-800/80 transition-colors">
+      <CardHeader className="space-y-4 pb-4">
         <div className="flex items-start justify-between gap-3">
-          <div className="flex items-start gap-3">
-            <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-md bg-primary/10 text-primary">
+          <div className="flex items-center gap-3">
+            <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-white dark:bg-slate-800 text-primary shadow-sm">
               <Icon className="h-5 w-5" />
-            </span>
+            </div>
             <div>
-              <p className="text-xs font-medium uppercase text-muted-foreground">{insight.category.replace("_", " ")}</p>
-              <CardTitle className="leading-snug">{insight.title}</CardTitle>
-              <p className="mt-2 text-sm text-muted-foreground">{insight.plainLanguage}</p>
+              <p className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground/80">{insight.category.replace("_", " ")}</p>
+              <CardTitle className="text-lg leading-tight mt-0.5">{insight.title}</CardTitle>
             </div>
           </div>
-          <Badge tone={insightTone(insight.tone)}>{insight.tone.replace("_", " ")}</Badge>
+          <Badge tone={insightTone(insight.tone)} className="rounded-full">{insight.tone.replace("_", " ")}</Badge>
         </div>
+        
+        <p className="text-sm font-medium leading-relaxed">{insight.plainLanguage}</p>
+
         <div className="flex flex-wrap gap-2">
-          <Badge tone={confidenceTone(insight.confidence)}>{insight.confidence} confidence</Badge>
-          {insight.supportingMetric ? <Badge>{insight.supportingMetric}</Badge> : null}
-          {insight.doctorDiscussion ? <Badge tone="warn">doctor-worthy</Badge> : null}
+          <Badge tone={confidenceTone(insight.confidence)} className="bg-white/50 dark:bg-slate-950/50">{insight.confidence} confidence</Badge>
+          {insight.supportingMetric ? <Badge className="bg-white/50 dark:bg-slate-950/50">{insight.supportingMetric}</Badge> : null}
         </div>
       </CardHeader>
-      <CardContent className="space-y-4">
-        <p className="text-sm">{insight.summary}</p>
-        <details className="rounded-md border bg-muted/35 p-3 text-sm">
-          <summary className="cursor-pointer font-medium">Why this matters</summary>
-          <p className="mt-2 text-muted-foreground">{insight.whyItMatters}</p>
-        </details>
-        {insight.limitations?.length ? (
-          <div className="rounded-md border border-amber-200 bg-amber-50 p-3 text-sm text-amber-900 dark:border-amber-900 dark:bg-amber-950 dark:text-amber-100">
-            <p className="font-medium">Data limitation</p>
-            <p className="mt-1">{insight.limitations[0]}</p>
+
+      <CardContent className="space-y-4 flex-1 flex flex-col pt-0">
+        <div className="space-y-3 flex-1">
+          <div className="rounded-2xl bg-white/60 dark:bg-slate-950/40 p-4 text-sm leading-relaxed text-muted-foreground border border-white/20 dark:border-slate-800/50">
+            {insight.summary}
           </div>
-        ) : null}
-        <div className="flex flex-wrap gap-2">
-          <Button size="sm" variant="outline" type="button">
-            <BarChart3 className="h-4 w-4" />
-            View chart
-          </Button>
-          <Button size="sm" variant={added ? "secondary" : "ghost"} type="button" onClick={() => onToggleReport?.(insight.id)}>
-            {added ? <ToggleRight className="h-4 w-4" /> : <ToggleLeft className="h-4 w-4" />}
-            {added ? "Added to report" : "Add to report"}
-          </Button>
-          {insight.doctorDiscussion ? (
-            <Button size="sm" variant="ghost" type="button">
-              <FilePlus2 className="h-4 w-4" />
-              Doctor note
-            </Button>
+
+          <details className="group rounded-xl border bg-white/40 dark:bg-slate-950/20 px-4 py-2 text-sm">
+            <summary className="flex cursor-pointer items-center justify-between font-bold text-xs uppercase tracking-wider text-muted-foreground py-1">
+              Why this matters
+              <ChevronRight className="h-3 w-3 transition-transform group-open:rotate-90" />
+            </summary>
+            <p className="mt-2 text-muted-foreground pb-2">{insight.whyItMatters}</p>
+          </details>
+
+          {insight.suggestedUserAction && (
+            <div className="rounded-xl bg-primary/5 dark:bg-primary/10 p-4 border border-primary/10">
+              <p className="text-[10px] font-bold uppercase tracking-wider text-primary mb-1">What to do next</p>
+              <p className="text-sm font-medium text-primary/90">{insight.suggestedUserAction}</p>
+            </div>
+          )}
+
+          {insight.limitations?.length ? (
+            <div className="rounded-xl bg-amber-50/50 dark:bg-amber-950/10 p-4 border border-amber-100 dark:border-amber-900/30">
+              <p className="text-[10px] font-bold uppercase tracking-wider text-amber-700 dark:text-amber-500 mb-1">Data limitation</p>
+              <p className="text-xs text-amber-800/80 dark:text-amber-200/60 leading-relaxed">{insight.limitations[0]}</p>
+            </div>
           ) : null}
+        </div>
+
+        <div className="flex flex-wrap gap-2 pt-2">
+          <Button size="sm" variant="outline" className="h-9 rounded-full bg-white dark:bg-slate-950 px-4 text-xs font-bold" type="button">
+            <BarChart3 className="mr-2 h-3 w-3" />
+            View Chart
+          </Button>
+          <Button 
+            size="sm" 
+            variant={added ? "secondary" : "ghost"} 
+            className="h-9 rounded-full px-4 text-xs font-bold" 
+            type="button" 
+            onClick={() => onToggleReport?.(insight.id)}
+          >
+            {added ? <CheckCircle2 className="mr-2 h-3 w-3" /> : <Plus className="mr-2 h-3 w-3" />}
+            {added ? "In Report" : "Add to Report"}
+          </Button>
         </div>
       </CardContent>
     </Card>
