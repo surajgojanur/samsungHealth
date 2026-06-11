@@ -1,8 +1,9 @@
 "use client";
 
 import { useState } from "react";
-import { Plus, Trash2 } from "lucide-react";
+import { Info, Plus, Trash2 } from "lucide-react";
 import type { SymptomLog } from "@/types/health";
+import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -118,27 +119,59 @@ export function SymptomLogPanel() {
             Add symptom
           </Button>
         </form>
-        <div className="space-y-2">
+        <div className="space-y-4">
+          <p className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground">Logged Symptoms</p>
           {symptoms.length === 0 ? (
-            <div className="flex h-full min-h-64 items-center justify-center rounded-md border border-dashed p-4 text-center text-sm text-muted-foreground">
-              No symptoms logged yet. Add symptoms to compare them with sleep, activity, heart rate, workouts, and SpO2 trends.
+            <div className="flex flex-col h-full min-h-[400px] items-center justify-center rounded-3xl border-2 border-dashed p-10 text-center bg-slate-50/50 dark:bg-slate-900/50">
+              <div className="flex h-16 w-16 items-center justify-center rounded-full bg-primary/10 text-primary mb-4">
+                <Plus className="h-8 w-8" />
+              </div>
+              <p className="text-lg font-bold text-slate-700 dark:text-slate-300">No symptoms logged yet</p>
+              <p className="text-sm text-muted-foreground mt-2 max-w-xs mx-auto">
+                Want better health patterns? Add symptoms like <span className="font-medium text-foreground">headache, fatigue, chest discomfort, dizziness, or stress</span> to see how they correlate with your wearable data.
+              </p>
+              <div className="mt-8 grid grid-cols-2 gap-2 w-full max-w-sm">
+                <Badge tone="neutral" className="justify-center py-2">Fatigue</Badge>
+                <Badge tone="neutral" className="justify-center py-2">Caffeine</Badge>
+                <Badge tone="neutral" className="justify-center py-2">Poor Sleep</Badge>
+                <Badge tone="neutral" className="justify-center py-2">Stress</Badge>
+              </div>
             </div>
           ) : (
-            symptoms.map((symptom) => (
-              <div key={symptom.id} className="flex items-start justify-between rounded-md border p-3">
-                <div>
-                  <p className="font-medium">{symptom.customSymptom || symptomTypes.find((item) => item.value === symptom.symptomType)?.label}</p>
-                  <p className="text-sm text-muted-foreground">
-                    {new Date(symptom.timestamp).toLocaleString()} · severity {symptom.severity ?? "n/a"}/10
-                  </p>
-                  {symptom.beforeEvent ? <p className="mt-1 text-sm">Before: {symptom.beforeEvent}</p> : null}
-                  {symptom.notes ? <p className="mt-1 text-sm text-muted-foreground">{symptom.notes}</p> : null}
+            <div className="grid gap-3">
+              {symptoms.map((symptom) => (
+                <div key={symptom.id} className="flex items-start justify-between rounded-2xl border bg-white dark:bg-slate-950 p-4 shadow-sm hover:border-primary/30 transition-colors">
+                  <div>
+                    <div className="flex items-center gap-2 mb-1">
+                      <p className="font-bold">{symptom.customSymptom || symptomTypes.find((item) => item.value === symptom.symptomType)?.label}</p>
+                      <Badge tone={symptom.severity && symptom.severity > 7 ? "bad" : "warn"} className="rounded-full px-2 py-0 h-5 text-[10px]">
+                        Severity {symptom.severity}/10
+                      </Badge>
+                    </div>
+                    <p className="text-[10px] font-medium text-muted-foreground uppercase tracking-tight">
+                      {new Date(symptom.timestamp).toLocaleString()}
+                    </p>
+                    {symptom.beforeEvent && (
+                      <div className="mt-2 flex items-start gap-1.5 text-xs text-slate-600 dark:text-slate-400 italic bg-slate-50 dark:bg-slate-900 p-2 rounded-lg">
+                        <Info className="h-3 w-3 mt-0.5 shrink-0" />
+                        <span>Before: {symptom.beforeEvent}</span>
+                      </div>
+                    )}
+                    {symptom.notes && <p className="mt-2 text-sm text-muted-foreground leading-relaxed">{symptom.notes}</p>}
+                    
+                    <div className="mt-3 flex flex-wrap gap-1.5">
+                      {symptom.flags?.caffeine && <Badge tone="neutral" className="text-[9px] uppercase font-bold">Caffeine</Badge>}
+                      {symptom.flags?.poorSleep && <Badge tone="neutral" className="text-[9px] uppercase font-bold">Poor Sleep</Badge>}
+                      {symptom.flags?.stress && <Badge tone="neutral" className="text-[9px] uppercase font-bold">Stress</Badge>}
+                      {symptom.flags?.doctorNote && <Badge tone="good" className="text-[9px] uppercase font-bold">Doctor Report</Badge>}
+                    </div>
+                  </div>
+                  <Button type="button" variant="ghost" size="icon" className="h-8 w-8 text-muted-foreground hover:text-red-500 rounded-full" onClick={() => void removeSymptom(symptom.id)} aria-label="Delete symptom">
+                    <Trash2 className="h-4 w-4" />
+                  </Button>
                 </div>
-                <Button type="button" variant="ghost" size="icon" onClick={() => void removeSymptom(symptom.id)} aria-label="Delete symptom">
-                  <Trash2 className="h-4 w-4" />
-                </Button>
-              </div>
-            ))
+              ))}
+            </div>
           )}
         </div>
       </CardContent>

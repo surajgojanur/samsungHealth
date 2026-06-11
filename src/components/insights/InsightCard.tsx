@@ -32,7 +32,17 @@ function insightTone(tone: HealthInsight["tone"]) {
   return "neutral";
 }
 
-export function InsightCard({ insight, added, onToggleReport }: { insight: HealthInsight; added?: boolean; onToggleReport?: (id: string) => void }) {
+export function InsightCard({ 
+  insight, 
+  added, 
+  onToggleReport,
+  onViewChart
+}: { 
+  insight: HealthInsight; 
+  added?: boolean; 
+  onToggleReport?: (id: string) => void;
+  onViewChart?: (insight: HealthInsight) => void;
+}) {
   const Icon = icons[insight.category];
   return (
     <Card className="flex flex-col h-full overflow-hidden border-none bg-slate-50 dark:bg-slate-900 shadow-none hover:bg-slate-100/80 dark:hover:bg-slate-800/80 transition-colors">
@@ -72,10 +82,28 @@ export function InsightCard({ insight, added, onToggleReport }: { insight: Healt
             <p className="mt-2 text-muted-foreground pb-2">{insight.whyItMatters}</p>
           </details>
 
+          {insight.possibleReasons && insight.possibleReasons.length > 0 && (
+            <div className="space-y-2">
+              <p className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground">Possible reasons</p>
+              <div className="flex flex-wrap gap-1.5">
+                {insight.possibleReasons.map(reason => (
+                  <Badge key={reason} tone="neutral" className="bg-white/40 dark:bg-slate-950/20 text-[10px]">
+                    {reason}
+                  </Badge>
+                ))}
+              </div>
+            </div>
+          )}
+
           {insight.suggestedUserAction && (
             <div className="rounded-xl bg-primary/5 dark:bg-primary/10 p-4 border border-primary/10">
               <p className="text-[10px] font-bold uppercase tracking-wider text-primary mb-1">What to do next</p>
               <p className="text-sm font-medium text-primary/90">{insight.suggestedUserAction}</p>
+              {insight.nextTrackingSteps && (
+                <p className="mt-2 text-xs text-primary/70 italic border-t border-primary/10 pt-2">
+                  {insight.nextTrackingSteps}
+                </p>
+              )}
             </div>
           )}
 
@@ -88,7 +116,13 @@ export function InsightCard({ insight, added, onToggleReport }: { insight: Healt
         </div>
 
         <div className="flex flex-wrap gap-2 pt-2">
-          <Button size="sm" variant="outline" className="h-9 rounded-full bg-white dark:bg-slate-950 px-4 text-xs font-bold" type="button">
+          <Button 
+            size="sm" 
+            variant="outline" 
+            className="h-9 rounded-full bg-white dark:bg-slate-950 px-4 text-xs font-bold" 
+            type="button"
+            onClick={() => onViewChart?.(insight)}
+          >
             <BarChart3 className="mr-2 h-3 w-3" />
             View Chart
           </Button>

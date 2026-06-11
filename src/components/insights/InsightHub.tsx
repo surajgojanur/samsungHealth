@@ -6,6 +6,8 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { InsightCard } from "./InsightCard";
 
+import { useHealthStore } from "@/store/healthStore";
+
 const tabs: Array<{ key: string; label: string; categories?: InsightCategory[]; important?: boolean; doctor?: boolean }> = [
   { key: "all", label: "All" },
   { key: "important", label: "Important", important: true },
@@ -18,14 +20,22 @@ const tabs: Array<{ key: string; label: string; categories?: InsightCategory[]; 
   { key: "quality", label: "Data quality", categories: ["data_quality"] }
 ];
 
-export function InsightHub({ insights }: { insights: HealthInsight[] }) {
+export function InsightHub({ 
+  insights,
+  onViewChart
+}: { 
+  insights: HealthInsight[];
+  onViewChart?: (insight: HealthInsight) => void;
+}) {
   const [tab, setTab] = useState("all");
   const [confidence, setConfidence] = useState("all");
   const [category, setCategory] = useState("all");
   const [doctorOnly, setDoctorOnly] = useState(false);
   const [hideLimited, setHideLimited] = useState(false);
   const [range, setRange] = useState("all");
-  const [reportIds, setReportIds] = useState<string[]>([]);
+
+  const selectedInsightIds = useHealthStore((state) => state.selectedInsightIds);
+  const toggleInsightSelection = useHealthStore((state) => state.toggleInsightSelection);
 
   const categories = useMemo(() => [...new Set(insights.map((insight) => insight.category))].sort(), [insights]);
   const filtered = useMemo(() => {
@@ -106,8 +116,9 @@ export function InsightHub({ insights }: { insights: HealthInsight[] }) {
           <InsightCard
             key={insight.id}
             insight={insight}
-            added={reportIds.includes(insight.id)}
-            onToggleReport={(id) => setReportIds((ids) => (ids.includes(id) ? ids.filter((item) => item !== id) : [...ids, id]))}
+            added={selectedInsightIds.includes(insight.id)}
+            onToggleReport={toggleInsightSelection}
+            onViewChart={onViewChart}
           />
         ))}
       </div>

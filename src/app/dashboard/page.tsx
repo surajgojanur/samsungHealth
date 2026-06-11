@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo } from "react";
+import { useMemo, useState } from "react";
 import Link from "next/link";
 import { Activity, AlertTriangle, ChevronRight, Dumbbell, HeartPulse, Info, LayoutDashboard, Moon, ShieldCheck, Stethoscope, TrendingUp, Zap } from "lucide-react";
 import { ChartGrid } from "@/components/dashboard/Charts";
@@ -10,6 +10,7 @@ import { CorrelationExplorer } from "@/components/insights/CorrelationExplorer";
 import { HealthStoryCard } from "@/components/insights/HealthStoryCard";
 import { InsightHub } from "@/components/insights/InsightHub";
 import { InsightCard } from "@/components/insights/InsightCard";
+import { InsightChartModal } from "@/components/insights/InsightChartModal";
 import { PeriodSummary } from "@/components/insights/PeriodSummary";
 import { UnusualDaysPanel } from "@/components/insights/UnusualDaysPanel";
 import { SymptomPatternPanel } from "@/components/symptoms/SymptomPatternPanel";
@@ -22,11 +23,17 @@ import { generateInsights, topDoctorDiscussionInsights } from "@/lib/insights/in
 import { makeSampleImport, makeSampleSymptoms } from "@/lib/sampleData";
 import { formatNumber } from "@/lib/utils";
 import { useHealthStore } from "@/store/healthStore";
+import type { HealthInsight } from "@/lib/insights/insightTypes";
 
 export default function DashboardPage() {
   const importResult = useHealthStore((state) => state.importResult);
   const setImportResult = useHealthStore((state) => state.setImportResult);
   const symptoms = useHealthStore((state) => state.symptoms);
+  const selectedInsightIds = useHealthStore((state) => state.selectedInsightIds);
+  const toggleInsightSelection = useHealthStore((state) => state.toggleInsightSelection);
+  
+  const [activeChartInsight, setActiveChartInsight] = useState<HealthInsight | null>(null);
+
   const active = importResult ?? makeSampleImport();
   const sampleMode = !importResult;
   const displaySymptoms = sampleMode && symptoms.length === 0 ? makeSampleSymptoms() : symptoms;
@@ -153,7 +160,13 @@ export default function DashboardPage() {
         </div>
         <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
           {insights.slice(0, 3).map((insight) => (
-            <InsightCard key={insight.id} insight={insight} />
+            <InsightCard 
+              key={insight.id} 
+              insight={insight} 
+              added={selectedInsightIds.includes(insight.id)}
+              onToggleReport={toggleInsightSelection}
+              onViewChart={setActiveChartInsight}
+            />
           ))}
         </div>
       </section>
@@ -203,7 +216,10 @@ export default function DashboardPage() {
       {/* Full Explorer Sections */}
       <section className="space-y-12 pt-10 border-t">
         <div id="all-insights">
-          <InsightHub insights={insights} />
+          <InsightHub 
+            insights={insights} 
+            onViewChart={setActiveChartInsight}
+          />
         </div>
         <CorrelationExplorer data={active.data} symptoms={displaySymptoms} />
         <div id="symptoms">
@@ -228,6 +244,14 @@ export default function DashboardPage() {
 
         <SymptomLogPanel />
       </section>
+
+      <InsightChartModal 
+        insight={activeChartInsight}
+        isOpen={!!activeChartInsight}
+        onOpenChange={(open) => !open && setActiveChartInsight(null)}
+        data={active.data}
+        symptoms={displaySymptoms}
+      />
 
       <Card className="border-none bg-muted/50">
         <CardContent className="p-6 text-sm text-center text-muted-foreground">

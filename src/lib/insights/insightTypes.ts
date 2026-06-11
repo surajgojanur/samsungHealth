@@ -26,6 +26,9 @@ export interface HealthInsight {
   summary: string;
   plainLanguage: string;
   whyItMatters: string;
+  possibleReasons?: string[];
+  suggestedUserAction?: string;
+  nextTrackingSteps?: string;
   supportingMetric?: string;
   comparison?: string;
   confidence: InsightConfidence;
@@ -35,7 +38,6 @@ export interface HealthInsight {
     end: string;
   };
   sourceMetrics: string[];
-  suggestedUserAction?: string;
   doctorDiscussion?: string;
   limitations?: string[];
   relatedCharts?: string[];

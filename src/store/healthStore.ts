@@ -7,6 +7,8 @@ import { clearAllStoredData, db } from "@/lib/storage/db";
 interface HealthState {
   importResult?: ImportResult;
   symptoms: SymptomLog[];
+  selectedInsightIds: string[];
+  selectedDayDates: string[];
   persistenceConsent: boolean;
   debugMode: boolean;
   strictPrivacy: boolean;
@@ -14,6 +16,8 @@ interface HealthState {
   setSymptoms: (symptoms: SymptomLog[]) => void;
   addSymptom: (symptom: SymptomLog) => Promise<void>;
   removeSymptom: (id: string) => Promise<void>;
+  toggleInsightSelection: (id: string) => void;
+  toggleDaySelection: (date: string) => void;
   setPersistenceConsent: (value: boolean) => Promise<void>;
   setDebugMode: (value: boolean) => void;
   setStrictPrivacy: (value: boolean) => void;
@@ -23,11 +27,13 @@ interface HealthState {
 
 export const useHealthStore = create<HealthState>((set, get) => ({
   symptoms: [],
+  selectedInsightIds: [],
+  selectedDayDates: [],
   persistenceConsent: false,
   debugMode: false,
   strictPrivacy: true,
   async setImportResult(result) {
-    set({ importResult: result });
+    set({ importResult: result, selectedInsightIds: [], selectedDayDates: [] });
     if (get().persistenceConsent) {
       await db.imports.put({ id: "latest", createdAt: new Date().toISOString(), result });
     }
@@ -43,6 +49,14 @@ export const useHealthStore = create<HealthState>((set, get) => ({
   async removeSymptom(id) {
     set({ symptoms: get().symptoms.filter((symptom) => symptom.id !== id) });
     if (get().persistenceConsent) await db.symptoms.delete(id);
+  },
+  toggleInsightSelection(id) {
+    const current = get().selectedInsightIds;
+    set({ selectedInsightIds: current.includes(id) ? current.filter((i) => i !== id) : [...current, id] });
+  },
+  toggleDaySelection(date) {
+    const current = get().selectedDayDates;
+    set({ selectedDayDates: current.includes(date) ? current.filter((d) => d !== date) : [...current, date] });
   },
   async setPersistenceConsent(value) {
     set({ persistenceConsent: value });
@@ -65,6 +79,6 @@ export const useHealthStore = create<HealthState>((set, get) => ({
   },
   async reset() {
     await clearAllStoredData();
-    set({ importResult: undefined, symptoms: [], persistenceConsent: false, debugMode: false, strictPrivacy: true });
+    set({ importResult: undefined, symptoms: [], selectedInsightIds: [], selectedDayDates: [], persistenceConsent: false, debugMode: false, strictPrivacy: true });
   }
 }));
